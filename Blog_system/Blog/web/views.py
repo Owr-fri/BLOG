@@ -1,5 +1,7 @@
 import redis
+import urllib.parse
 import smtplib
+import hashlib
 import numpy as np
 from email.mime.text import MIMEText
 from email.header import Header
@@ -9,24 +11,38 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from Blog.settings import EMAIL_FROM, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, subject
+from .models import *
+from ..Utils.utils import response_success,response_failure
 
 
 # Create your views here.
+# 初始化redis对象
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 class Login(APIView):
     def post(self, request):
         data = request.data.get('data')
         email,pwd,verify = data.split("&")
-        email = email.split("=")[1]
+        email = urllib.parse.unquote(email.split("=")[1])
         pwd = pwd.split("=")[1]
         verify = verify.split("=")[1]
-        return Response(data="登录成功")
+        # 加密
+        pwd_hash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+        # 校验邮箱验证码
+        code = r.get(email+"_code")
+        if verify == code:
+            user_obj = Users.objects.filter(email=email).first()
+            user_pwd = user_obj.pwd
+            if user_pwd == pwd_hash:
+                # 删除code
+                # r.delete(email + "_code")
+                return response_success(code=200,data='登录成功')
+        return Response(data="登录失败")
 
 
 class GetCode(APIView):
     def get(self, request):
         email = request.GET.get('email')
-        r = redis.Redis(host='localhost', port=6379, decode_responses=True)
         code = "".join(str(i) for i in np.random.randint(0, 9, 4))
         html_content = """<div><p>您好,您的验证码为:%s</p></div>""" % code
 

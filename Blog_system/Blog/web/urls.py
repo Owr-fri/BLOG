@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from web import views
+from Blog.web import views
 
 urlpatterns = [
     path("getCode/", views.GetCode.as_view(), name="getCode"),

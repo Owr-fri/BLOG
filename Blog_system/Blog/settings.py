@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'Blog',
-    'web'
+    'Blog.web'
 ]
 
 MIDDLEWARE = [

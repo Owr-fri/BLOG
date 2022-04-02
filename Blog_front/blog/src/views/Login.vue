@@ -41,7 +41,7 @@ export default {
       form:{
         email:"431306642@qq.com",
         pwd:"020706",
-        verify:"1234"
+        verify:"3055"
       },
     }
   },
@@ -49,11 +49,9 @@ export default {
     getCode(){
       let f = this.checkEmailNull(this.form.email)
       if (f) {
-        this.$http.get(
+        this.$get(
         this.$API.API_GET_CODE,{
-          params:{
             email:this.form.email
-          }
         }).then(res => {
           console.log(res)
         })
@@ -69,12 +67,17 @@ export default {
         }
       }
       if (f) {
-        this.$http.post(
+        this.$post(
         this.$API.API_LOGIN,{
-          headers: {"Content-Type": "multipart/form-data"},
-          data:this.$qs.stringify(this.form)
+          data:this.$qs.stringify(this.form),
         }).then(res => {
           console.log(res)
+          if (res.code == 200) {
+            console.log("登录成功")
+            this.$router.push('/index')
+          } else {
+            console.log('登录失败')
+          }
         })
       }
     },
@@ -128,7 +131,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .login-main{
       text-align: center;
       display: flex;
