@@ -8,8 +8,7 @@
       </div>
       <ul>
         <li><a href="/">首页</a></li>
-        <li><a href="/blog">博客</a></li>
-        <li><a href="/p">标签</a></li>
+        <li><a href="/label">标签</a></li>
         <li><a href="/category">分类</a></li>
         <li><a href="/picture">图集</a></li>
         <li><a href="/manage">管理</a></li>
@@ -23,7 +22,7 @@ export default {
     name: "Header",
 }
 </script>
-<style>
+<style scoped>
   #header{ 
     height: 50px;
     font-weight: 300;
@@ -54,7 +53,6 @@ export default {
   }
   h1{
     margin: 0px;
-    color: #3d615e;
     font-family: Georgia;
     float: left;
   }
@@ -62,6 +60,7 @@ export default {
     line-height: 40px;
     font-size: 22px;
     text-align: center;
+    color: #464a4a;
   }
   #slogan{
     position: relative;
@@ -71,17 +70,6 @@ export default {
     font-size: 10px;
     color: #596172;
     opacity: .8;
-  }
-  a{
-    color: #3d615e;
-    text-decoration: none;
-    display: block;
-    z-index: 200;
-    transition: all .3s ease;
-  }
-  body{
-    margin: 0;
-    padding: 0;
   }
   #header ul li a:before{
     content: "";

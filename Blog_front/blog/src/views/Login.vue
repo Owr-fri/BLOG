@@ -41,7 +41,7 @@ export default {
       form:{
         email:"431306642@qq.com",
         pwd:"020706",
-        verify:"3055"
+        verify:"0657"
       },
     }
   },
@@ -67,14 +67,13 @@ export default {
         }
       }
       if (f) {
-        this.$post(
-        this.$API.API_LOGIN,{
+        this.$post(this.$API.API_LOGIN,{
           data:this.$qs.stringify(this.form),
         }).then(res => {
           console.log(res)
           if (res.code == 200) {
             console.log("登录成功")
-            this.$router.push('/index')
+            this.$router.push('/')
           } else {
             console.log('登录失败')
           }
@@ -217,5 +216,9 @@ export default {
       width: 25%;
       margin-left: 10px;
     }
-
+    hr {
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;
+    }
 </style>

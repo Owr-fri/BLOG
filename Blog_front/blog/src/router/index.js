@@ -2,6 +2,17 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from "../views/Login.vue"
 import Index from '../views/Index.vue'
+import Posts from '../views/Post.vue'
+import PostList from '../components/PostList.vue'
+import Manage from '../views/Manage.vue'
+import PublishPost from '../components/PublishPost.vue'
+import PostBody from '../components/PostBody.vue'
+import Label from '../views/Label.vue'
+import Category from '../views/Category.vue'
+import CategoryList from '../components/CategoryList.vue'
+import PostByCategory from '../components/PostByCategory.vue'
+import PostByLabel from '../components/PostByLabel.vue'
+import TagCloud from "../components/TagCloud.vue"
 
 Vue.use(VueRouter)
 
@@ -13,8 +24,70 @@ const routes = [
   },
   {
     path: '/',
-    name: 'Index',
-    component: Index
+    component: Index,
+    children:[
+      {
+        path:'',
+        name:'PostList',
+        component:PostList,
+      },
+      {
+        path:'label',
+        component:Label,
+        children:[
+          {
+            path: ':name',
+            name: 'PostByLabel',
+            component: PostByLabel,
+          },
+          {
+            path: '',
+            name: 'TagCloud',
+            component: TagCloud,
+          }
+        ]
+      },
+      {
+        path:'category',
+        component:Category,
+        children:[
+          {
+            path: '',
+            name: 'CategoryList',
+            component: CategoryList,
+          },
+          {
+            path: ':name',
+            name: 'PostByCategory',
+            component: PostByCategory,
+          }
+        ]
+      }
+    ]
+  },
+  {
+    path: '/posts',
+    name: 'Posts',
+    component: Posts,
+    children:[
+      {
+        path:":p",
+        name:"postbody",
+        component:PostBody,
+      }
+    ]
+  },
+  {
+    path: '/manage',
+    name: 'Manage',
+    component: Manage,
+    children: [
+      {
+        path:'publishpost',
+        name:'PublishPost',
+        component:PublishPost,
+      },
+    ]
   },
 ]
 

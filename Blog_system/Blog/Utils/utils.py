@@ -1,6 +1,12 @@
 import json
 import datetime
+import random
+
+from django.core.paginator import InvalidPage
 from django.http import HttpResponse
+from rest_framework.pagination import PageNumberPagination
+
+from Blog import settings
 
 # 返回状态码及信息
 status_code = {
@@ -37,7 +43,8 @@ class JSONEncoder(json.JSONEncoder):
 
 # 查询成功
 def response_success(code=None, message=None, data=None):
-    message = status_code.get(code)
+    if not message:
+        message = status_code.get(code)
     return HttpResponse(json.dumps({
         'code': code,  # code由前后端配合指定
         'msg': message,  # 提示信息
@@ -54,3 +61,30 @@ def response_failure(code=None, message=None):
         'code': code,
         'msg': message
     }), 'application/json')
+
+
+# 上传图片
+def upload_image(img_file,upload_path):
+    # 获取后缀名
+    ext = img_file.name.split('.')[-1]
+    # 如果上传图片的后缀名不在配置的后缀名里返回格式不允许
+    if ext not in settings.ALLOWED_IMG_TYPE:
+        return response_failure(code=415)
+    # 新的文件名
+    new_file_name = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + str(
+        random.randint(10000, 99999)) + '.' + ext  # 采用时间和随机数
+    path = upload_path + new_file_name
+    with open(path, 'wb') as f:  # 二进制写入
+        for i in img_file.chunks():
+            f.write(i)
+    return path
+
+
+# 字典切片
+def dict_slice(adict, start, end):
+    keys = adict.keys()
+    dict_slice = {}
+    for k in list(keys)[start:end]:
+        dict_slice[k] = adict[k]
+    return dict_slice
+

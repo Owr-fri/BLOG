@@ -5,7 +5,7 @@
         </div>
         <span>
             Open sourced to Github
-            <a href="https://github.com/Owr-fri"> Owr-fri</a>
+            <a href="https://github.com/Owr-fri/BLOG"> Owr-fri</a>
         </span>
         
     </div>

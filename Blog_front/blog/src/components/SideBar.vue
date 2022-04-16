@@ -202,6 +202,7 @@ export default {
         vertical-align: middle;
         color: #606266;
         cursor: pointer;
+        background: #f8f8f8;
     }
     .search-but:hover{
         color: #b5ebe6;
