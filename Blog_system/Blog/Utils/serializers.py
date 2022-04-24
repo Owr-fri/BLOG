@@ -72,3 +72,11 @@ class PostSerializers(serializers.ModelSerializer):
         data["categoryName"] = Categorys.objects.filter(id=data["categoryId"]).first().categoryName
         data["labelName"] = [Labels.objects.filter(id=i).first().labelName for i in data["labelId"]]
         return data
+
+
+class PictureSerializers(serializers.ModelSerializer):
+    """ 图集序列表 """
+
+    class Meta:
+        model = Pictures
+        fields = "__all__"

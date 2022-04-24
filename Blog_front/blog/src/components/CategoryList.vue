@@ -5,7 +5,7 @@
                 CategoryList
             </h3>
         </div>
-        <div class="tag-title">
+        <div class="tag-title" v-if="show">
             <span>
                 目前共计{{total}}个分类
             </span>
@@ -13,7 +13,7 @@
         <div class="body">
             <ul class="category-list">
                 <li class="category-list-item" v-for="item in categorys" :key="item.id">
-                    <a class="category-list-link" href="javascript:void(0)" @click="toCategory(item.id,item.category)">{{item.category}}</a>
+                    <a class="category-list-link" href="javascript:void(0)" @click="toCategory(item.id,item.name)">{{item.name}}</a>
                 </li>
             </ul>
         </div>
@@ -26,6 +26,7 @@ export default {
         return {
             categorys:[],
             total:'',
+            show:false,
         }
     },
     mounted(){
@@ -38,6 +39,7 @@ export default {
                 if (res.code == 200) {
                     this.categorys = res.data;
                     this.total = res.data.length;
+                    this.show = true;
                 } else {
                     console.log(res.msg);
                 }

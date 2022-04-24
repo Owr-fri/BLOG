@@ -2,17 +2,19 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from "../views/Login.vue"
 import Index from '../views/Index.vue'
-import Posts from '../views/Post.vue'
+import Post from '../views/Post.vue'
 import PostList from '../components/PostList.vue'
 import Manage from '../views/Manage.vue'
-import PublishPost from '../components/PublishPost.vue'
-import PostBody from '../components/PostBody.vue'
 import Label from '../views/Label.vue'
 import Category from '../views/Category.vue'
 import CategoryList from '../components/CategoryList.vue'
 import PostByCategory from '../components/PostByCategory.vue'
 import PostByLabel from '../components/PostByLabel.vue'
 import TagCloud from "../components/TagCloud.vue"
+import Picture from '../views/Picture.vue'
+import Ppicture from '../components/PublishPicture.vue'
+import PicturePage from '../views/PicturePage.vue'
+import p from '../components/p.vue'
 
 Vue.use(VueRouter)
 
@@ -62,20 +64,19 @@ const routes = [
             component: PostByCategory,
           }
         ]
-      }
+      },
+      {
+        path:'picture',
+        name:'Picture',
+        component:Picture,
+      },
     ]
   },
   {
-    path: '/posts',
-    name: 'Posts',
-    component: Posts,
-    children:[
-      {
-        path:":p",
-        name:"postbody",
-        component:PostBody,
-      }
-    ]
+    path: '/post/:p',
+    name: 'Post',
+    component: Post,
+    
   },
   {
     path: '/manage',
@@ -83,12 +84,23 @@ const routes = [
     component: Manage,
     children: [
       {
-        path:'publishpost',
-        name:'PublishPost',
-        component:PublishPost,
+        path:'ppost',
+        name:'Ppost',
+        component:p,
+      },
+      {
+        path:'ppicture',
+        name:'Ppicture',
+        component:Ppicture,
       },
     ]
   },
+  {
+    path:'/picture/:title',
+    name:'PicturePage',
+    component:PicturePage
+  },
+
 ]
 
 const router = new VueRouter({

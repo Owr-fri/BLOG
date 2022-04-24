@@ -73,7 +73,7 @@ export default {
         timeout: 15000,
         headers: {
           // 'X-Requested-With': 'XMLHttpRequest',
-          'Access-Control-Allow-Origin': '*',
+          // 'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }).then(
@@ -110,7 +110,6 @@ export default {
       )
     },
     delete(url, params) {
-  
       return axios({
         method: 'delete',
         url,

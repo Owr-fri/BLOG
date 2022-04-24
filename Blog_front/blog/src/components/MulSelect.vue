@@ -4,7 +4,7 @@
             <el-option
             v-for="item in options"
             :key="item.id"
-            :label="item.label"
+            :label="item.name"
             :value="item.id"
             >
             </el-option>

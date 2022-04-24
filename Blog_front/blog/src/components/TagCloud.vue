@@ -15,7 +15,7 @@
                 <tbody align="center" valign="center">
                     <tr v-for="(items,index) in labels" :key="index">
                         <td v-for="item in items" :key="item.id">
-                            <a href="javascript:void(0)" @click="toLabel(item.id,item.label)">{{item.label}}</a>
+                            <a href="javascript:void(0)" @click="toLabel(item.id,item.name)">{{item.name}}</a>
                         </td>
                     </tr>
                 </tbody>

@@ -16,10 +16,19 @@ import API from "./common/js/APIUtil"
 import qs from 'qs'
 // 导入fetch
 import fetch from './common/js/fetch'
+// 导入懒加载
+import LazyLoad from 'vue-lazyload'
+// 导入mavon-editor
+import MavonEditor from 'mavon-editor'
 
+Vue.use(MavonEditor)
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);
+Vue.use(LazyLoad,{
+  preLoad: 1.3,
+  error: 'common/images/error.png',
+});
 
 // axios赋值给变量axios
 Vue.prototype.$http = axios
@@ -29,6 +38,8 @@ Vue.prototype.$get = fetch.get
 Vue.prototype.$post = fetch.post
 Vue.prototype.$put = fetch.put
 Vue.prototype.$del = fetch.delete
+Vue.prototype.$upload = fetch.upload
+
 Vue.prototype.$qs = qs
 
 new Vue({

@@ -9,6 +9,8 @@ import hashlib
 import numpy as np
 from email.mime.text import MIMEText
 from email.header import Header
+from django.db.models import Count, Min, Max, Sum
+from django.db.models import QuerySet
 from django.views import View
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -77,7 +79,7 @@ def getCategory(request):
         data = serializers.data
         for item in data:
             res.append({"id": item["id"],
-                        "category": item["categoryName"]})
+                        "name": item["categoryName"]})
         return response_success(code=200, data=res)
     except:
         return response_failure(code=500)
@@ -91,34 +93,27 @@ def getLabel(request):
         data = serializers.data
         for item in data:
             res.append({"id": item["id"],
-                        "label": item["labelName"]})
+                        "name": item["labelName"]})
         return response_success(code=200, data=res)
     except:
         return response_failure(code=500)
 
 
-def uploadImg(request):
-    i = 1
-    imgPath = request.FILES.getlist("Image")
-    print(imgPath)
-    folder = "static/temp/"
+class uploadImg(APIView):
+    def post(self, request):
+        img = request.FILES.get("img")
+        upload_path = upload_image(img, 'static/upload/blog/')
+        return response_success(200, data={"url": upload_path})
 
-    upload_path = upload_image(*imgPath, folder)
-    res = {
-        "errno": 0,
-        "data": {"url": "http://" + request.get_host() + '/' + upload_path}
-    }
-    return HttpResponse(json.dumps(res))
-
+    def delete(self,request):
+        img = request.data.get('img')
+        path = 'static'+img.split("static")[1]
+        os.remove(path)
+        return response_success(200, message="删除成功")
 
 class Publish(APIView):
     def post(self, request):
         data = request.data
-        imgList1 = [i['src'].split('/')[-1] for i in data["imgList"]]
-        # print(data)
-        # 修改数据，让其符合serializer的校验
-        data = dict_slice(data, 0, -1)
-        data["content"] = data["content"].replace("static/temp/", "static/upload/")
 
         # 判断是否要添加分类和标签
         if str(data["categoryId"]).isdigit():
@@ -140,17 +135,12 @@ class Publish(APIView):
             return response_failure(code=400, message="数据格式错误")
 
         instance = serializer.save()
-        try:
-            if instance and imgList1:  # 判断是否保存为空再删除temp多余的图
-                imgList2 = os.listdir("static/temp/")
-                for img in imgList2:
-                    if img in imgList1:
-                        shutil.move("static/temp/" + img, "static/upload/")
-                    else:
-                        os.remove("static/temp/" + img)
+        if instance:  # 判断是否保存为空再删除temp多余的图
             return response_success(code=200, message="发布成功")
-        except:
+        else:
             return response_failure(code=500, message="发布失败，请稍后发布")
+
+
 
 
 class GetPosts(APIView):
@@ -178,7 +168,7 @@ class GetPosts(APIView):
                     "comment_counts": data["comment_counts"],
                     "like_counts": data["like_counts"],
                     "categoryName": data["categoryName"],
-                    "categoryId":data["categoryId"]
+                    "categoryId": data["categoryId"]
                 })
             res = {
                 "posts": posts,
@@ -272,3 +262,92 @@ class GetPostByCategory(APIView):
                 "comment_counts": data["comment_counts"],
             })
         return response_success(code=200, data=res)
+
+
+class GetPicture(APIView):
+    def get(self, request):
+        obj = Pictures.objects.filter(isCover=True).order_by('id')
+        serializer = PictureSerializers(obj, many=True)
+        res = []
+        for data in serializer.data:
+            res.append({
+                "img": "http://" + request.get_host() + data["imgPath"],
+                "title": data["title"],
+            })
+
+        return response_success(code=200, data=res)
+
+
+class UploadPicture(APIView):
+    def post(self, request):
+        images = request.FILES.getlist("file")
+        summary = request.data.get('summary')
+        # 创建文件夹
+        title = datetime.datetime.now().strftime("%Y年%m月%d日%H时%M分%S秒")
+        pic_dic = os.path.join('static\\picture', title + '\\')
+        os.mkdir(pic_dic)
+
+        if len(images) == 0:
+            return response_failure(400, message="请重新上传图片")
+
+        # 只上传一张的情况
+        if len(images) == 1:
+            print(images)
+            upload_path = upload_image(images[0], pic_dic)
+            Pictures.objects.create(imgPath=upload_path, title=title, summary=summary, isCover=True)
+            return response_success(code=200, message="图片上传成功")
+
+        else:
+            upload_path = upload_image(images[0], pic_dic)
+            Pictures.objects.create(imgPath=upload_path, title=title, summary=summary, isCover=True)
+            for image in images[1:]:
+                upload_path = upload_image(image, pic_dic)
+                Pictures.objects.create(imgPath=upload_path, title=title, summary=summary)
+            return response_success(code=200, message="图片上传成功")
+
+
+class GetPictureDesc(APIView):
+    def get(self, request):
+        title = request.GET.get("title", '')
+        obj = Pictures.objects.filter(title=title).order_by("id")
+        prev_obj = Pictures.objects.filter(id__lt=obj.first().id, isCover=True).all().order_by("-id").first()
+        next_obj = Pictures.objects.filter(id__gt=obj.first().id, isCover=True).all().order_by("id").first()
+        res = []
+        if obj:
+            serializer = PictureSerializers(obj, many=True)
+            for data in serializer.data:
+                res.append({
+                    "id": data["id"],
+                    "img": data["imgPath"][1:],
+                })
+            summary = serializer.data[0]["summary"]
+            prev = {
+                "id": prev_obj.id if prev_obj else -1,
+                "title": prev_obj.title if prev_obj else '没有上一条啦',
+            }
+            next = {
+                "id": next_obj.id if next_obj else -1,
+                "title": next_obj.title if next_obj else '没有下一条啦',
+            }
+
+            return response_success(200, data={"title": title, "imglist": res, "summary": summary,
+                                               "prev": prev, "next": next})
+        return response_failure(404, message="图集请求失败")
+
+
+class GetPictureRec(APIView):
+    def get(self, request):
+        title = request.GET.get("title", '')
+        obj = Pictures.objects.exclude(title=title).filter(isCover=True)[:6]
+        res = []
+        if obj:
+            serializer = PictureSerializers(obj, many=True)
+            for data in serializer.data:
+                res.append({
+                    "id": data["id"],
+                    "img": data["imgPath"][1:],
+                    "title": data["title"],
+                })
+            random.shuffle(res)
+            return response_success(200, data=res)
+        return response_failure(501)

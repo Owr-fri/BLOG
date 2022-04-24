@@ -23,6 +23,14 @@ export default{
     // 根据标签获得博客
     API_GET_POST_BY_LABEL: serverBase + 'getPostByLabel/',
     // 根据分类获得博客
-    API_GET_POST_BY_CATEGORY: serverBase + 'getPostByCategory/'
+    API_GET_POST_BY_CATEGORY: serverBase + 'getPostByCategory/',
+    // 获取图集
+    API_GET_PICTURES: serverBase + 'getPicture/',
+    // 上传图集
+    API_UPLOAD_PICTURE: serverBase + 'uploadPicture/',
+    // 获取图片详情
+    API_GET_PICTURE_DESC: serverBase + 'getPictureDesc/',
+    // 获取推荐图集
+    API_GET_PICTURE_RECOMMEND: serverBase + 'getPictureRec/'
 
 }

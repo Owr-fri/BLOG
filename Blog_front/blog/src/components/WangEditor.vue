@@ -15,6 +15,7 @@
             :mode="mode"
             @onChange="onChange"
             @onMaxLength="onMaxLength"
+            @onCreated="onCreate"
         />
     </div>
 </template>
@@ -32,6 +33,7 @@ export default {
             latestContent: [], // 用于存储编辑器最新的内容，onChange 时修改
             toolbarConfig: {
                 excludeKeys:[
+                    "headerSelect",
                     "insertImage",
                     "insertTable",
                     "group-video",
@@ -46,7 +48,13 @@ export default {
                     "|",
                     "fontSize",
                     "lineHeight",
-                ]
+                    "emotion",
+                ],
+                insertKeys:{
+                    index:1,
+                    keys:['header3']
+                }
+                
             },  
             editorConfig: {
                 placeholder: '请输入内容...',
@@ -108,7 +116,6 @@ export default {
     },
 
     mounted(){
-
     },
 
     beforeDestroy() {

@@ -22,6 +22,6 @@ export default {
 <style scoped>
   .home{
     margin: 0px auto;
-    width: 900px;
+    width: 920px;
   }
 </style>

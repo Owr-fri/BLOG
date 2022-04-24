@@ -5,7 +5,7 @@
                 <ul class="posts-ul">
                     <li v-for="(item,index) in posts" :key="index" class="post-item">
                         <div class="post-title">
-                            <a :href="'/posts/'+item.id" class="post-link">
+                            <a :href="'/post/'+item.id" class="post-link">
                                 <span>
                                     {{ item.title }}
                                 </span>
@@ -27,7 +27,7 @@
                         <div class="post-main">
                             <div class="post-content">
                                 {{ item.summary }}
-                                <a :href="'/posts/'+item.id" class="read-desc">阅读全文</a>
+                                <a :href="'/post/'+item.id" class="read-desc">阅读全文</a>
                             </div>
                         </div>
                         <div class="post-desc">
