@@ -17,7 +17,7 @@
                                 </template>
                                 <el-menu-item-group>
                                 <el-menu-item index="/manage/ppost">发布博客</el-menu-item>
-                                <el-menu-item index="/manage/postm">管理博客</el-menu-item>
+                                <el-menu-item index="/manage/mpost">管理博客</el-menu-item>
                                 </el-menu-item-group>
                             </el-submenu>
                             <el-submenu index="picture-manage">

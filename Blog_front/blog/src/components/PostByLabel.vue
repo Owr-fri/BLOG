@@ -9,7 +9,7 @@
                 <li v-for="item in posts" :key="item.id" class="item">
                     <div class="post-item">
                         <div class="post-title">
-                            <a :href="'/posts/'+item.id"> {{item.title}} </a>
+                            <a :href="'/post/'+item.id"> {{item.title}} </a>
                         </div>
                         <div class="post-desc">
                             <span class="iconfont">&#xe74f;</span>

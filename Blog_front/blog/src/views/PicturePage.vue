@@ -90,7 +90,6 @@ export default {
         this.getPictureDesc()
         this.getRecommend()
         this.show = true;
-
     },
 
     methods:{

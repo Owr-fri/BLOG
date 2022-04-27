@@ -8,14 +8,14 @@
         <div class="blog-state">
             <nav>
                 <div class="blog-state-item blog-state-posts">
-                    <a href="/blog" class="state-item">
+                    <a href="/" class="state-item">
                     <span class="state-item-count">{{ posts_counts }}</span>
                     <span class="state-item-name">博客</span>
                     </a>
                 </div>
                 <div class="blog-state-item blog-state-p">
-                    <a href="/p" class="state-item">
-                    <span class="state-item-count">{{ p_conts }}</span>
+                    <a href="/label" class="state-item">
+                    <span class="state-item-count">{{ label_counts }}</span>
                     <span class="state-item-name">标签</span>
                     </a>
                 </div>
@@ -76,9 +76,9 @@ export default {
     name:"sideBar",
     data(){
         return {
-            posts_counts:45,
-            p_conts:23,
-            picture_counts:11,
+            posts_counts:0,
+            label_counts:0,
+            picture_counts:0,
             hotposts:[
                 {
                     title:"Life Long Learning",
@@ -96,6 +96,23 @@ export default {
                     author:"Owr",
                 },
             ],
+        }
+    },
+
+    mounted(){
+        this.getCount()
+    },
+
+    methods:{
+        getCount(){
+            this.$get(this.$API.API_GET_COUNT
+            ).then(res => {
+                if (res.code==200) {
+                    this.posts_counts = res.data.post;
+                    this.label_counts = res.data.label;
+                    this.picture_counts = res.data.picture;
+                }
+            })
         }
     }
 }

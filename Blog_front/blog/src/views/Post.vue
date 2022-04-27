@@ -502,7 +502,7 @@ export default {
             height: 1px;
             position: absolute;
             left: 0;
-            bottom: -2px;
+            bottom: -1px;
             background: #456795;
             transform: scaleX(0);
             transform-origin: left;

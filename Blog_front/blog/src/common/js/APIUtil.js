@@ -31,6 +31,8 @@ export default{
     // 获取图片详情
     API_GET_PICTURE_DESC: serverBase + 'getPictureDesc/',
     // 获取推荐图集
-    API_GET_PICTURE_RECOMMEND: serverBase + 'getPictureRec/'
+    API_GET_PICTURE_RECOMMEND: serverBase + 'getPictureRec/',
+    // 获取
+    API_GET_COUNT: serverBase + 'getCount/',
 
 }

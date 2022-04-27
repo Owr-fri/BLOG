@@ -20,6 +20,7 @@ import fetch from './common/js/fetch'
 import LazyLoad from 'vue-lazyload'
 // 导入mavon-editor
 import MavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 Vue.use(MavonEditor)
 Vue.config.productionTip = false

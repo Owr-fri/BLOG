@@ -14,7 +14,8 @@ import TagCloud from "../components/TagCloud.vue"
 import Picture from '../views/Picture.vue'
 import Ppicture from '../components/PublishPicture.vue'
 import PicturePage from '../views/PicturePage.vue'
-import p from '../components/p.vue'
+import PublishPost from '../components/PublishPost.vue'
+import ManagePost from '../components/ManagePost.vue'
 
 Vue.use(VueRouter)
 
@@ -86,7 +87,12 @@ const routes = [
       {
         path:'ppost',
         name:'Ppost',
-        component:p,
+        component:PublishPost,
+      },
+      {
+        path:'mpost',
+        name:'Mpost',
+        component:ManagePost,
       },
       {
         path:'ppicture',

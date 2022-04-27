@@ -105,11 +105,12 @@ class uploadImg(APIView):
         upload_path = upload_image(img, 'static/upload/blog/')
         return response_success(200, data={"url": upload_path})
 
-    def delete(self,request):
+    def delete(self, request):
         img = request.data.get('img')
-        path = 'static'+img.split("static")[1]
+        path = 'static' + img.split("static")[1]
         os.remove(path)
         return response_success(200, message="删除成功")
+
 
 class Publish(APIView):
     def post(self, request):
@@ -141,40 +142,46 @@ class Publish(APIView):
             return response_failure(code=500, message="发布失败，请稍后发布")
 
 
-
-
 class GetPosts(APIView):
     def get(self, request):
         # 排序
         queryset = Posts.objects.all().order_by("-id")
+        getTotal = request.GET.get('total','False')
         # 总数
         if queryset:
             total = queryset.count()
             serializer = PostSerializers
-            # 分页
-            page = PageNumberPagination()
-            course_list = page.paginate_queryset(queryset, request, self)
-            # 分页之后序列化
-            ser = serializer(instance=course_list, many=True)
-            posts = []
-            for data in ser.data:
-                posts.append({
-                    "id": data["id"],
-                    "title": data["title"],
-                    "summary": data["summary"],
-                    "author": data["author"],
-                    "publishTime": data["publishTime"],
-                    "read_counts": data["read_counts"],
-                    "comment_counts": data["comment_counts"],
-                    "like_counts": data["like_counts"],
-                    "categoryName": data["categoryName"],
-                    "categoryId": data["categoryId"]
-                })
-            res = {
-                "posts": posts,
-                "total": total,
-            }
-            return response_success(code=200, data=res)
+            if getTotal == 'False':
+                # 分页
+                page = PageNumberPagination()
+                course_list = page.paginate_queryset(queryset, request, self)
+                # 分页之后序列化
+                ser = serializer(instance=course_list, many=True)
+                posts = []
+                for data in ser.data:
+                    posts.append({
+                        "id": data["id"],
+                        "title": data["title"],
+                        "summary": data["summary"],
+                        "author": data["author"],
+                        "publishTime": data["publishTime"],
+                        "read_counts": data["read_counts"],
+                        "comment_counts": data["comment_counts"],
+                        "like_counts": data["like_counts"],
+                        "categoryName": data["categoryName"],
+                        "categoryId": data["categoryId"],
+                        "labelName": data["labelName"],
+                        "labelId": data["labelId"],
+                    })
+                res = {
+                    "posts": posts,
+                    "total": total,
+                }
+                return response_success(code=200, data=res)
+            else:
+                ser = serializer(instance=queryset, many=True)
+                return response_success(code=200, data=ser.data)
+
         return response_failure(code=404, message="分页请求失败")
 
 
@@ -351,3 +358,15 @@ class GetPictureRec(APIView):
             random.shuffle(res)
             return response_success(200, data=res)
         return response_failure(501)
+
+
+class GetCount(APIView):
+    def get(self, request):
+        post = Posts.objects.all().count()
+        label = Labels.objects.all().count()
+        picture = Pictures.objects.filter(isCover=True).count()
+        return response_success(200, data={
+            "post": post,
+            "label": label,
+            "picture": picture,
+        })

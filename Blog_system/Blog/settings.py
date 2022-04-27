@@ -99,6 +99,7 @@ CORS_ALLOW_HEADERS = (  # 设置请求头的内容
     'x-request-with',
     'Pragma',
 )
+
 # 支持跨域配置结束
 
 

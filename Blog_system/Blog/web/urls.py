@@ -17,5 +17,6 @@ urlpatterns = [
     path("getPicture/",views.GetPicture.as_view(),name="getPicture"),
     path("uploadPicture/",views.UploadPicture.as_view(),name="uploadPicture"),
     path("getPictureDesc/",views.GetPictureDesc.as_view(),name="getPictureDesc"),
-    path("getPictureRec/",views.GetPictureRec.as_view(),name="getPictureRec")
+    path("getPictureRec/",views.GetPictureRec.as_view(),name="getPictureRec"),
+    path("getCount/",views.GetCount.as_view(),name="getCount"),
 ]
