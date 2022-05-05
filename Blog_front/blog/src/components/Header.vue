@@ -1,41 +1,43 @@
 <template>
-    <div id="header">
-      <div id="title">
-        <h1>
-          <a>Owr的博客</a>
-        </h1>
-        <a id="slogan">能者敛其锋芒</a>
-      </div>
-      <ul>
-        <li><a href="/">首页</a></li>
-        <li><a href="/label">标签</a></li>
-        <li><a href="/category">分类</a></li>
-        <li><a href="/picture">图集</a></li>
-        <li><a href="/manage">管理</a></li>
-        <li><a href="/login">登录</a></li>
-      </ul>
+  <div id="header">
+    <div id="title">
+      <h1>
+        <a>Owr的博客</a>
+      </h1>
+      <a id="slogan">能者敛其锋芒</a>
     </div>
+    <ul>
+      <li><a href="/">首页</a></li>
+      <li><a href="/label">标签</a></li>
+      <li><a href="/category">分类</a></li>
+      <li><a href="/picture">图集</a></li>
+      <li><a href="/manage">管理</a></li>
+      <li><a href="/login">登录</a></li>
+    </ul>
+  </div>
 </template>
- 
+
 <script>
-export default {
+  export default {
     name: "Header",
-}
+  }
 </script>
 <style scoped>
-  #header{ 
+  #header {
     height: 50px;
     font-weight: 300;
     /* border-bottom: 1px solid #eef2f8; */
     border-bottom: 1px solid #e8ecf1;
   }
-  #header ul{ 
-    position: relative; 
+
+  #header ul {
+    position: relative;
     margin: 0 auto;
     float: right;
     margin-right: 10px;
   }
-  #header li{
+
+  #header li {
     float: left;
     margin-right: 0px;
     font-size: 17px;
@@ -43,26 +45,31 @@ export default {
     height: 40px;
     list-style: none;
   }
-  #header ul li a{
-    line-height: 50px;  
+
+  #header ul li a {
+    line-height: 50px;
     position: relative;
     text-align: center;
   }
-  #title{
+
+  #title {
     display: inline-block;
   }
-  h1{
+
+  h1 {
     margin: 0px;
     font-family: Georgia;
     float: left;
   }
-  #title h1 a{
+
+  #title h1 a {
     line-height: 40px;
     font-size: 22px;
     text-align: center;
     color: #464a4a;
   }
-  #slogan{
+
+  #slogan {
     position: relative;
     text-align: left;
     line-height: 10px;
@@ -71,7 +78,8 @@ export default {
     color: #596172;
     opacity: .8;
   }
-  #header ul li a:before{
+
+  #header ul li a:before {
     content: "";
     position: absolute;
     width: 100%;
@@ -83,11 +91,13 @@ export default {
     transform-origin: right;
     transition: transform .4s ease;
   }
-  #header ul li a:hover:before{
+
+  #header ul li a:hover:before {
     transform: scaleX(1);
     transform-origin: left;
   }
-  #header ul li a:hover{
+
+  #header ul li a:hover {
     color: #3fc9be;
   }
 </style>

@@ -1,6 +1,8 @@
 import json
 import datetime
+import os
 import random
+import shutil
 
 from django.core.paginator import InvalidPage
 from django.http import HttpResponse
@@ -88,3 +90,13 @@ def dict_slice(adict, start, end):
         dict_slice[k] = adict[k]
     return dict_slice
 
+# 删除文件夹
+def del_dict(rootdir):
+    filelist = os.listdir(rootdir)
+    for f in filelist:
+        filepath = os.path.join(rootdir, f)
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+        elif os.path.isdir(filepath):
+            shutil.rmtree(filepath, True)
+    os.remove(rootdir)

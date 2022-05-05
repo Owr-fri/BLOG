@@ -73,6 +73,7 @@ TEMPLATES = [
 
 # 支持跨域配置开始
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+
 CORS_ORIGIN_WHITELIST = (  # 设置白名单
     'http://127.0.0.1:8080',
     'http://localhost:8080',
@@ -169,7 +170,7 @@ EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
 subject = "验证电子邮件地址"
 
-ALLOWED_IMG_TYPE = ["jpg", "png"]
+ALLOWED_IMG_TYPE = ["jpg", "png", "jpeg"]
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

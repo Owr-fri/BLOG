@@ -2,24 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3bda6a7e-3f55-4793-9c56-dd7df28c9587" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/common/js/APIUtil.js" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/common/js/APIUtil.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/components/Footer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/components/Footer.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/components/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/components/Header.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/components/MainContent.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/components/MainContent.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/components/SideBar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/components/SideBar.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/views/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/.idea/Blog.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/.idea/Blog.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/Blog/Utils/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/Utils/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/Blog/Utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/Utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Blog_front/blog/src/components/ManagePost.vue" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_front/blog/src/components/ManagePost.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_system/Blog/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/Blog/web/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/Blog/web/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/web/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_system/Blog/web/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/web/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_system/Blog/web/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_system/Blog/web/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +37,11 @@
       <workItem from="1649032472363" duration="11000" />
       <workItem from="1649037547687" duration="6000" />
       <workItem from="1649570640014" duration="9000" />
+      <workItem from="1651145139980" duration="22000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>

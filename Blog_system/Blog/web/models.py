@@ -30,9 +30,8 @@ class Posts(models.Model):
     read_counts = models.IntegerField(verbose_name=u'阅读数', default=0)
     comment_counts = models.IntegerField(verbose_name=u'评论数', default=0)
     like_counts = models.IntegerField(verbose_name=u'喜欢数', default=0)
-    # categoryId = models.IntegerField(verbose_name=u'分类ID',null=False)
-    # labelId = models.IntegerField(verbose_name=u'标签ID',null=False)
     categoryId = models.ForeignKey(verbose_name=u'分类ID', to='Categorys', on_delete=models.CASCADE)
+    isDel = models.BooleanField(verbose_name=u'是否删除', default=False)
     # label = models.ForeignKey(verbose_name=u'标签ID',to='Labels',on_delete=models.CASCADE)
     labelId = models.ManyToManyField(verbose_name=u'标签ID', to='Labels', blank=True)
 
@@ -90,4 +89,4 @@ class Pictures(models.Model):
     imgPath = models.ImageField(verbose_name=u'图片', upload_to='static/picture', null=True)
     title = models.CharField(verbose_name=u'标题', max_length=100)
     summary = models.CharField(verbose_name=u'简要', max_length=255)
-    isCover = models.BooleanField(verbose_name=u'是否为封面',default=False)
+    sort = models.IntegerField(verbose_name=u'序号')

@@ -16,6 +16,9 @@ import Ppicture from '../components/PublishPicture.vue'
 import PicturePage from '../views/PicturePage.vue'
 import PublishPost from '../components/PublishPost.vue'
 import ManagePost from '../components/ManagePost.vue'
+import ManagePicture from '../components/ManagePicture.vue'
+import ReEditPicture from '../components/ReEditPicture.vue'
+import Search from '../components/Search.vue'
 
 Vue.use(VueRouter)
 
@@ -28,83 +31,94 @@ const routes = [
   {
     path: '/',
     component: Index,
-    children:[
+    children: [
+    {
+      path: '',
+      name: 'PostList',
+      component: PostList,
+    },
+    {
+      path: 'label',
+      component: Label,
+      children: [
       {
-        path:'',
-        name:'PostList',
-        component:PostList,
+        path: ':name',
+        name: 'PostByLabel',
+        component: PostByLabel,
       },
       {
-        path:'label',
-        component:Label,
-        children:[
-          {
-            path: ':name',
-            name: 'PostByLabel',
-            component: PostByLabel,
-          },
-          {
-            path: '',
-            name: 'TagCloud',
-            component: TagCloud,
-          }
-        ]
+        path: '',
+        name: 'TagCloud',
+        component: TagCloud,
+      }]
+    },
+    {
+      path: 'category',
+      component: Category,
+      children: [
+      {
+        path: '',
+        name: 'CategoryList',
+        component: CategoryList,
       },
       {
-        path:'category',
-        component:Category,
-        children:[
-          {
-            path: '',
-            name: 'CategoryList',
-            component: CategoryList,
-          },
-          {
-            path: ':name',
-            name: 'PostByCategory',
-            component: PostByCategory,
-          }
-        ]
-      },
-      {
-        path:'picture',
-        name:'Picture',
-        component:Picture,
-      },
-    ]
+        path: ':name',
+        name: 'PostByCategory',
+        component: PostByCategory,
+      }]
+    },
+    {
+      path: 'picture',
+      name: 'Picture',
+      component: Picture,
+    },
+    {
+      path: 'search',
+      name: 'Search',
+      component: Search
+    }]
   },
   {
     path: '/post/:p',
     name: 'Post',
     component: Post,
-    
+
   },
   {
     path: '/manage',
     name: 'Manage',
     component: Manage,
     children: [
-      {
-        path:'ppost',
-        name:'Ppost',
-        component:PublishPost,
-      },
-      {
-        path:'mpost',
-        name:'Mpost',
-        component:ManagePost,
-      },
-      {
-        path:'ppicture',
-        name:'Ppicture',
-        component:Ppicture,
-      },
-    ]
+    {
+      path: 'ppost',
+      name: 'Ppost',
+      component: PublishPost,
+    },
+    {
+      path: 'mpost',
+      name: 'Mpost',
+      component: ManagePost,
+    },
+    {
+      path: 'ppicture',
+      name: 'Ppicture',
+      component: Ppicture,
+    },
+    {
+      path: 'mpicture',
+      name: 'Mpicture',
+      component: ManagePicture,
+    },
+    {
+      path: "mpicture/:name",
+      name: 'ReEditPicture',
+      component: ReEditPicture
+    }]
   },
   {
-    path:'/picture/:title',
-    name:'PicturePage',
-    component:PicturePage
+    path: '/picture/:title',
+    name: 'PicturePage',
+    component: PicturePage
   },
 
 ]

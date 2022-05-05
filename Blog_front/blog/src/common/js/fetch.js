@@ -136,7 +136,7 @@ export default {
       return axios({
         method: 'put',
         headers:{
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         dataType: "json",
         processData: false,  // 不处理数据

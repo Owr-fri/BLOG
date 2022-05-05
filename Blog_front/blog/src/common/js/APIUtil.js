@@ -32,7 +32,14 @@ export default{
     API_GET_PICTURE_DESC: serverBase + 'getPictureDesc/',
     // 获取推荐图集
     API_GET_PICTURE_RECOMMEND: serverBase + 'getPictureRec/',
-    // 获取
+    // 获取数量
     API_GET_COUNT: serverBase + 'getCount/',
+    // 获取图片
+    API_GET_IMG: serverBase + 'getImg/',
+    // 图集图片删除和添加
+    API_UPDATE_PICUTRE: serverBase + 'updatePicture/',
+    // 博客搜索
+    API_SEARCH_POSTS: serverBase + 'search/'
+    
 
 }
