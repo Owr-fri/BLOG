@@ -32,7 +32,7 @@
             <span style="font-size: 19px">{{ name }}</span>
             <div class="role">
               <i class="el-icon-user"></i>
-              {{ role }}
+              {{ Trole }}
             </div>
           </div>
           <div class="divide"></div>
@@ -184,6 +184,15 @@ export default {
       }
       return "访客";
     },
+    Trole(){
+      if (this.role == "s") {
+        return "admin";
+      }
+      if (this.role == "u") {
+        return "user";
+      }
+      return "visitor";
+    }
   },
   beforeMount() {},
   mounted() {
@@ -258,15 +267,16 @@ export default {
       this.avatar = res.data.avatar;
     },
     getCommentList() {
-      this.$get(this.$API.API_COMMENT, {
+      this.$get(this.$API.API_USER_COMMENT, {
         userId: localStorage.getItem("id"),
       }).then((res) => {
         this.commentList = res.data;
       });
     },
     delComment(id) {
-      this.$del(this.$API.API_COMMENT, {
-        id: id,
+      this.$del(this.$API.API_USER_COMMENT, {
+        userId: localStorage.getItem("id"),
+        commentId: id,
       }).then((res) => {
         if (res.code === 200) {
           this.commentList = this.commentList.filter((i) => {
@@ -290,7 +300,8 @@ export default {
     },
     cancelLike(id) {
       this.$del(this.$API.API_LIKE, {
-        id: id,
+        userId: localStorage.getItem("id"),
+        likeId: id,
       }).then((res) => {
         if (res.code === 200) {
           this.likeList = this.likeList.filter((i) => {

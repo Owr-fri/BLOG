@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'Blog',
-    'Blog.web'
+    'Blog.web',
+    'Blog.user',
+    'Blog.picture',
 ]
 
 MIDDLEWARE = [
@@ -191,7 +193,7 @@ subject = "验证电子邮件地址"
 
 ALLOWED_IMG_TYPE = ["jpg", "png", "jpeg"]
 
-SESSION_COOKIE_AGE = 5
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
 SESSION_SAVE_EVERY_REQUEST = True
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 设置关闭浏览器时失效
 

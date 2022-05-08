@@ -216,7 +216,7 @@ export default {
       let formdata = new FormData();
       formdata.append("read_counts", this.read_counts + 1);
       formdata.append("postId", this.postId);
-      this.$put(this.$API.API_GET_POST, formdata).then((res) => {
+      this.$put(this.$API.API_POST, formdata).then((res) => {
         if (res.code === 200) {
           this.read_counts += 1;
         }
@@ -251,7 +251,7 @@ export default {
     },
 
     getPost() {
-      this.$get(this.$API.API_GET_POST, {
+      this.$get(this.$API.API_POST, {
         id: this.$route.params["p"],
         userId: localStorage.getItem("id"),
       }).then((res) => {
@@ -370,7 +370,7 @@ export default {
         if (valid) {
           let date = new Date();
 
-          this.$post(this.$API.API_COMMENT, {
+          this.$post(this.$API.API_USER_COMMENT, {
             postId: this.postId,
             userId: this.userId,
             time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
@@ -407,15 +407,16 @@ export default {
       });
     },
     getComment() {
-      this.$get(this.$API.API_COMMENT, {
+      this.$get(this.$API.API_POST_COMMENT, {
         postId: this.$route.params["p"],
       }).then((res) => {
         this.comment_list = res.data;
       });
     },
     delComment(id) {
-      this.$del(this.$API.API_COMMENT, {
-        id: id,
+      this.$del(this.$API.API_USER_COMMENT, {
+        userId: localStorage.getItem("id"),
+        commentId: id,
       }).then((res) => {
         if (res.code === 200) {
           this.comment_list = this.comment_list.filter((i) => {
@@ -426,7 +427,7 @@ export default {
             message: "删除成功!",
           });
         } else if (res.code === 401) {
-          localStorage.clear();
+          // localStorage.clear();
           this.$message({
             message: res.msg,
             type: "error",

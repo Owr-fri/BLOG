@@ -112,7 +112,7 @@ def check_login(func):
                 userId = request.GET.get('id') if request.GET.get('id') else request.GET.get('userId')
             else:
                 userId = request.data.get('id') if request.data.get('id') else request.data.get('userId')
-            print(f"session-get-id:{session_get_userId},user-id:{userId}")
+            print(f"path:{request.path},session-get-id:{session_get_userId},user-id:{userId}")
             if str(session_get_userId) != str(userId):
                 return response_failure(401, message='请重新登录')
             return func(request, *args, **kwargs)

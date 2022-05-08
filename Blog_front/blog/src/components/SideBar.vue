@@ -65,7 +65,7 @@
       <div class="hotposts-item">
         <ul>
           <li v-for="(item, index) in hotposts" :key="index" class="hotpost">
-            <a href="/" class="hotpost-title"
+            <a :href="'/post/' + item.id" class="hotpost-title"
               >{{ index + 1 }}. {{ item.title }}</a
             >
             <div class="hotpost-summary">
@@ -87,26 +87,7 @@ export default {
       posts_counts: 0,
       label_counts: 0,
       picture_counts: 0,
-      hotposts: [
-        {
-          title: "Life Long Learning",
-          summary:
-            "Life long learning又可以叫做终身学习；对于人类自身而言，我们每次都是用同一个脑来学习机器学习的每一堂课，每次的作业也都需要训练不同的神经网络，那么我们可不可以每次作业都使用同一个神经网络呢？ life long learning可简称为LLL，也可被称作Continuous Learning, Never Ending Learning, Incremental Learning",
-          author: "Owr",
-        },
-        {
-          title: "Meta Learning",
-          summary:
-            "本文主要叙述了meta learning的核心思想，对比了machine learning和meta learning的三个步骤；接着介绍了meta learning一般会用到的数据集Omniglot；除了meta learning，本文还讲了transfer learning的其他两个技术：MAML和Reptile。 IntroductionMeta learning可以让机器学习如何去le",
-          author: "Owr",
-        },
-        {
-          title: "Transfer Learning",
-          summary:
-            "本文主要针对source和target data的不同情况，介绍了几种主要的transfer learning的方式，包括Fine-tuning、Multitask learning、domain-adversarial training、zero-shot learning。 如果现在没有和我们任务直接相关的数据，比如我们要做的任务是猫狗分类，很可能手头只有elephant和tiger的数据",
-          author: "Owr",
-        },
-      ],
+      hotposts: [],
       state: "",
       searchList: [],
     };
@@ -115,6 +96,7 @@ export default {
   mounted() {
     this.getCount();
     this.loadAll();
+    this.hot();
   },
 
   methods: {
@@ -161,6 +143,11 @@ export default {
         query: {
           key: value,
         },
+      });
+    },
+    hot() {
+      this.$get(this.$API.API_HOT).then((res) => {
+        this.hotposts = res.data;
       });
     },
   },
