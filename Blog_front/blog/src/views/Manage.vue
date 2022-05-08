@@ -5,7 +5,13 @@
       <div class="nav-bar">
         <el-row class="tac">
           <el-col :span="4">
-            <el-menu :default-active="this.$route.path" class="menu-bar" active-text-color="#3fc9be" text-color="#505560" :router="true">
+            <el-menu
+              :default-active="this.$route.path"
+              class="menu-bar"
+              active-text-color="#3fc9be"
+              text-color="#505560"
+              :router="true"
+            >
               <el-submenu index="posts-manage">
                 <template slot="title">
                   <span>博客管理</span>
@@ -39,7 +45,10 @@
         </el-row>
       </div>
       <div class="activate-content">
-        <el-empty :description="description" v-if="this.$route.path == '/manage'"></el-empty>
+        <el-empty
+          :description="description"
+          v-if="this.$route.path == '/manage'"
+        ></el-empty>
         <router-view></router-view>
       </div>
       <div class="clear"></div>
@@ -50,63 +59,85 @@
 </template>
 
 <script>
-  import Header from "@/components/Header.vue"
-  import Footer from '@/components/Footer.vue'
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 
-  export default {
-    name: 'editor',
-    components: {
-      Header,
-      Footer,
-    },
-    data() {
-      return {
-        description: '请选择导航'
+export default {
+  name: "editor",
+  components: {
+    Header,
+    Footer,
+  },
+  data() {
+    return {
+      description: "请选择导航",
+    };
+  },
+  beforeMount() {
+    this.$get(this.$API.API_IS_ADMIN).then((res) => {
+      if (res.code === 200) {
+        return;
       }
-    },
-
-    mounted() {}
-  }
+      if (res.code === 303) {
+        this.$confirm(res.msg, "提示", {
+          confirmButtonText: "确定",
+          type: "warning",
+          closeOnClickModal: false,
+          closeOnPressEscape: false,
+          closeOnHashChange: false,
+          center: true,
+          showCancelButton: false,
+          showClose: false,
+        }).then(() => {
+          this.$router.push("/");
+        });
+        return;
+      }
+      this.$router.push("/");
+    });
+  },
+  mounted() {},
+};
 </script>
 
 <style scoped>
-  .home {
-    margin: 0px auto;
-    height: 100%;
-    width: 920px;
-  }
+.home {
+  margin: 0px auto;
+  height: 100%;
+  width: 920px;
+}
 
-  .el-menu-item {
-    min-width: 155px !important;
-  }
+.el-menu-item {
+  min-width: 155px !important;
+}
 
-  .footer {
-    margin: 0px auto;
-    width: 940px;
-    height: 45px;
-    bottom: 0px;
-  }
+.footer {
+  margin: 0px auto;
+  width: 940px;
+  height: 45px;
+  bottom: 0px;
+}
 
-  .main {
-    margin-top: 15px;
-    min-height: calc(90vh);
-  }
+.main {
+  margin-top: 15px;
+  min-height: calc(90vh);
+}
 
-  .nav-bar {
-    width: 155px;
-    float: left;
-  }
+.nav-bar {
+  width: 155px;
+  float: left;
+}
 
-  .nav-bar>>>.el-col-4 {
-    width: 100% !important;
-  }
+.nav-bar >>> .el-col-4 {
+  width: 100% !important;
+}
 
-  .activate-content {
-    width: 82%;
-    float: right;
-  }
+.activate-content {
+  width: 82%;
+  float: right;
+}
 
-  .clear {
-    clear: both;
-  }
+.clear {
+  clear: both;
+}
 </style>

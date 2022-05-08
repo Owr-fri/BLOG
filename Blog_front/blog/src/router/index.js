@@ -19,6 +19,8 @@ import ManagePost from '../components/ManagePost.vue'
 import ManagePicture from '../components/ManagePicture.vue'
 import ReEditPicture from '../components/ReEditPicture.vue'
 import Search from '../components/Search.vue'
+import UserCenter from '../views/UserCenter.vue'
+import Register from '../views/Register.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,16 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/center',
+    name: 'UserCenter',
+    component: UserCenter
   },
   {
     path: '/',

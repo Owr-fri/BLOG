@@ -4,7 +4,6 @@
     </el-page-header>
     <h2 class="title">图片</h2>
     <vuedraggable tag="ul" draggable=".draggable-item" class="drag-div" v-bind="dragOptions" v-model="imgList">
-      <!-- 拖拽元素 -->
       <li v-for="(item) in imgList" :key="item.id" class="draggable-item">
         <el-image :src="$API.BASE_SERVER_URL+item.img" :preview-src-list="[$API.BASE_SERVER_URL+item.img]" :style="{width:'140px',height:'140px'}" :fit="'cover'"></el-image>
         <div class="shadow" @click="onRemoveHandler(item.id)">
@@ -119,7 +118,7 @@
         });
         fromdata.append("imglist", imglist)
         fromdata.append("summary", this.summary)
-        this.$put(this.$API.API_UPLOAD_PICTURE, fromdata).then(res => {
+        this.$put(this.$API.API_PICTURE, fromdata).then(res => {
           this.$message({
             message: res.msg,
             type: 'success'

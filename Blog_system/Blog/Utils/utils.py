@@ -66,7 +66,7 @@ def response_failure(code=None, message=None):
 
 
 # 上传图片
-def upload_image(img_file,upload_path):
+def upload_image(img_file, upload_path):
     # 获取后缀名
     ext = img_file.name.split('.')[-1]
     # 如果上传图片的后缀名不在配置的后缀名里返回格式不允许
@@ -90,6 +90,7 @@ def dict_slice(adict, start, end):
         dict_slice[k] = adict[k]
     return dict_slice
 
+
 # 删除文件夹
 def del_dict(rootdir):
     filelist = os.listdir(rootdir)
@@ -99,4 +100,30 @@ def del_dict(rootdir):
             os.remove(filepath)
         elif os.path.isdir(filepath):
             shutil.rmtree(filepath, True)
-    os.remove(rootdir)
+    # os.remove(rootdir)
+
+
+# 验证登录
+def check_login(func):
+    def wrapper(request, *args, **kwargs):
+        session_get_userId = request.session.get('id')
+        if session_get_userId:
+            if request.method == 'GET':
+                userId = request.GET.get('id') if request.GET.get('id') else request.GET.get('userId')
+            else:
+                userId = request.data.get('id') if request.data.get('id') else request.data.get('userId')
+            print(f"session-get-id:{session_get_userId},user-id:{userId}")
+            if str(session_get_userId) != str(userId):
+                return response_failure(401, message='请重新登录')
+            return func(request, *args, **kwargs)
+        return response_failure(401, message='登录已过期,请重新登录')
+    return wrapper
+
+# 验证是否为管理员
+def check_admin(func):
+    def wrapper(request, *args, **kwargs):
+        session_get_role = request.session.get('role')
+        if session_get_role == 's':
+            return func(request, *args, **kwargs)
+        return response_failure(401, message='授权失败，请重新登录')
+    return wrapper

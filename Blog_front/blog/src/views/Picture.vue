@@ -15,7 +15,7 @@
 
         <div class="picture-body">
           <a href="javascript:void(0)" v-for="(item,index) in pictures" :key="index" @click="toPicture(item.title)">
-            <div class="img-card" :style="{backgroundImage:'url('+item.img+')',backgroundSize: 'cover',
+            <div class="img-card" :style="{backgroundImage:'url('+$API.BASE_SERVER_URL+item.img+')',backgroundSize: 'cover',
                                   backgroundPosition: 'center center',backgroundRepeat: 'no-repeat'}" v-lazy="item">
             </div>
             <div class="img-card-title">
@@ -32,8 +32,6 @@
 </template>
 
 <script>
-  // import SideBar from '@/components/SideBar.vue'
-
   export default {
     name: "picture-item",
     data() {
@@ -43,14 +41,14 @@
       }
     },
     components: {
-      // SideBar,
+
     },
     mounted() {
       this.getPictures()
     },
     methods: {
       getPictures() {
-        this.$get(this.$API.API_GET_PICTURES).then(res => {
+        this.$get(this.$API.API_PICTURE).then(res => {
           if (res.code == 200) {
             this.pictures = res.data;
             this.show = true;

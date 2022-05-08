@@ -69,6 +69,8 @@ class PostSerializers(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        data['like_counts'] = Likes.objects.filter(postId=data['id']).count()
+        data['comment_counts'] = Comments.objects.filter(postId=data['id']).count()
         data["categoryName"] = Categorys.objects.filter(id=data["categoryId"]).first().categoryName
         data["labelName"] = [Labels.objects.filter(id=i).first().labelName for i in data["labelId"]]
         return data
@@ -89,3 +91,32 @@ class PictureSerializers(serializers.ModelSerializer):
     class Meta:
         model = Pictures
         fields = "__all__"
+
+class CommentSerializers(serializers.ModelSerializer):
+    """ 评论序列表 """
+
+    class Meta:
+        model = Comments
+        fields = "__all__"
+
+        id = serializers.IntegerField(label='评论ID', read_only=True)
+        comment = serializers.CharField(label='评论内容', max_length=255)
+        time = serializers.DateTimeField(label='评论时间')
+        postId = serializers.PrimaryKeyRelatedField(label='帖子ID', queryset=Posts.objects.all())
+        userId = serializers.PrimaryKeyRelatedField(label='用户ID', queryset=Users.objects.all())
+
+    def create(self, validated_data):
+        instance = Comments.objects.create(**validated_data)
+        return instance
+
+class LikeSerializers(serializers.ModelSerializer):
+    """ 评论序列表 """
+
+    class Meta:
+        model = Likes
+        fields = "__all__"
+
+
+    def create(self, validated_data):
+        instance = Likes.objects.create(**validated_data)
+        return instance

@@ -189,7 +189,6 @@
               message: '发布成功',
               type: 'success'
             });
-            // location.reload()
             this.title = '';
             this.categroySelected = '';
             this.labelSelected = '';

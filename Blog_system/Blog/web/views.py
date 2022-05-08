@@ -1,7 +1,3 @@
-import json
-import base64
-import os
-import shutil
 import redis
 import urllib.parse
 import smtplib
@@ -9,17 +5,11 @@ import hashlib
 import numpy as np
 from email.mime.text import MIMEText
 from email.header import Header
-from django.http import QueryDict
-from django.db.models import Count, Min, Max, Sum
-from django.db.models import QuerySet
-from django.views import View
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework.pagination import PageNumberPagination
+from django.contrib.auth import authenticate, login
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from Blog.settings import EMAIL_FROM, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, subject
-from .models import *
 from ..Utils.utils import *
 from ..Utils.serializers import *
 
@@ -30,23 +20,36 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 class Login(APIView):
     def post(self, request):
-        data = request.data.get('data')
-        email, pwd, verify = data.split("&")
-        email = urllib.parse.unquote(email.split("=")[1])
-        pwd = pwd.split("=")[1]
-        verify = verify.split("=")[1]
+        username = request.data.get("username")
+        password = request.data.get("pwd")
+        verify = request.data.get("verify")
+        time = request.data.get("time").replace('/', '-')
         # 加密
-        pwd_hash = hashlib.sha256(pwd.encode('utf-8')).hexdigest()
+        pwd_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         # 校验邮箱验证码
-        code = r.get(email + "_code")
+        code = r.get(username + "_code")
         if verify == code:
-            user_obj = Users.objects.filter(email=email).first()
+            user_obj = Users.objects.filter(email=username).first()
             user_pwd = user_obj.pwd
             if user_pwd == pwd_hash:
                 # 删除code
                 # r.delete(email + "_code")
-                return response_success(code=200, data='登录成功')
-        return Response(data="登录失败")
+                user_obj.loginTime = time
+                request.session['is_login'] = 'true'  # 是否已经登录
+                request.session['id'] = user_obj.id  # 登录用户id
+                request.session['role'] = user_obj.role  # 用户角色
+                user_obj.save()
+                request.session.save()
+                return response_success(code=200,
+                                        data={"id": user_obj.id, "avatar": str(user_obj.avatar), "name": user_obj.name,
+                                              "role": user_obj.role})
+        return response_failure(202, message="登录失败")
+
+    # 退出
+    @method_decorator(check_login)
+    def get(self, request):
+        request.session.clear()
+        return response_success(200, message='成功退出')
 
 
 class GetCode(APIView):
@@ -101,11 +104,14 @@ def getLabel(request):
 
 
 class uploadImg(APIView):
+    @method_decorator(check_admin)
     def post(self, request):
+        print(request.FILES)
         img = request.FILES.get("img")
         upload_path = upload_image(img, 'static/upload/blog/')
         return response_success(200, data={"url": upload_path})
 
+    @method_decorator(check_admin)
     def delete(self, request):
         img = request.data.get('img')
         path = 'static' + img.split("static")[1]
@@ -114,6 +120,7 @@ class uploadImg(APIView):
 
 
 class Publish(APIView):
+    @method_decorator(check_admin)
     def post(self, request):
         data = request.data
 
@@ -142,6 +149,7 @@ class Publish(APIView):
         else:
             return response_failure(code=500, message="发布失败，请稍后发布")
 
+    @method_decorator(check_admin)
     def put(self, request):
         data = request.data.dict()
         id = data['id']
@@ -153,10 +161,12 @@ class Publish(APIView):
         except:
             return response_failure(304, message="保存失败")
 
+    @method_decorator(check_admin)
     def delete(self, request):
         id = request.data['id']
         Posts.objects.filter(id=id).update(isDel=True)
         return response_success(200, message='删除成功')
+
 
 
 class GetPosts(APIView):
@@ -211,16 +221,21 @@ class GetPosts(APIView):
                     })
                 return response_success(code=200, data=res)
 
-
         return response_failure(code=404, message="分页请求失败")
 
 
 class GetPost(APIView):
     def get(self, request):
         postId = request.GET.get("id", "")
+        userId = request.GET.get('userId', '')
         obj = Posts.objects.filter(id=postId)
+        like_counts = Likes.objects.filter(postId=postId).count()
+        comment_counts = Comments.objects.filter(postId=postId).count()
         prev_obj = Posts.objects.filter(id__lt=postId).all().order_by("-id").first()
         next_obj = Posts.objects.filter(id__gt=postId).all().order_by("id").first()
+        isLike = 0
+        if userId:
+            isLike = Likes.objects.filter(postId=postId, userId=userId).count()
         if obj:
             serializer = PostSerializers(obj, many=True)
 
@@ -231,9 +246,9 @@ class GetPost(APIView):
                 "content": data["content"],
                 "author": data["author"],
                 "publishTime": data["publishTime"],
-                "like_counts": data["like_counts"],
+                "like_counts": like_counts,
                 "read_counts": data["read_counts"],
-                "comment_counts": data["comment_counts"],
+                "comment_counts": comment_counts,
                 "category": {
                     "id": data['categoryId'],
                     "name": data["categoryName"]
@@ -246,19 +261,59 @@ class GetPost(APIView):
                 "prev": {
                     "id": prev_obj.id if prev_obj else -1,
                     "title": prev_obj.title if prev_obj else '没有上一条啦',
-                }
+                },
+                "islike": isLike
             }
             return response_success(code=200, data=res)
         return response_failure(code=404, message="博客请求失败")
 
+    @method_decorator(check_login)
+    def put(self, request):
+        postId = request.data.get('postId')
+        read_counts = request.data.get('read_counts')
+        print(postId, read_counts)
+        flag = Posts.objects.filter(id=postId).update(read_counts=read_counts)
+        if flag:
+            return response_success(200, message='阅读量加一')
+        else:
+            return response_failure(304)
+
 
 class Like(APIView):
+    @method_decorator(check_login)
     def post(self, request):
-        postId = request.data.get('id', '')
-        counts = request.data.get('counts', '')
-        Posts.objects.filter(id=postId).update(like_counts=counts)
+        data = request.data
+        data['postId'] = Posts.objects.filter(id=data['postId']).first().id
+        data['userId'] = Users.objects.filter(id=data['userId']).first().id
+        serializer = LikeSerializers(data=data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return response_failure(304)
+        serializer.save()
+        return response_success(200)
 
-        return response_failure(501)
+    @method_decorator(check_login)
+    def delete(self, request):
+        postId = request.data.get("postId")
+        userId = request.data.get("userId")
+        id = request.data.get('id')
+        flag, count = Likes.objects.filter(id=id).delete() if id else Likes.objects.filter(postId=postId,
+                                                                                           userId=userId).delete()
+        if flag:
+            return response_success(200, message='删除成功')
+        else:
+            return response_failure(304, message='删除失败')
+
+    @method_decorator(check_login)
+    def get(self, request):
+        userId = request.GET.get('id')
+        objs = Likes.objects.filter(userId=userId).order_by('-id')
+        res = []
+        for obj in objs:
+            data = LikeSerializers(obj).data
+            data['title'] = Posts.objects.filter(id=data['postId']).first().title
+            res.append(data)
+        return response_success(200, data=res)
 
 
 class GetPostByLabel(APIView):
@@ -301,22 +356,38 @@ class GetPostByCategory(APIView):
         return response_success(code=200, data=res)
 
 
-class GetPicture(APIView):
+# class GetPicture(APIView):
+#     def get(self, request):
+#         obj = Pictures.objects.filter(sort=1).order_by('id')
+#         serializer = PictureSerializers(obj, many=True)
+#         res = []
+#         for data in serializer.data:
+#             res.append({
+#                 "img": str(data["imgPath"])[1:] if str(data["imgPath"]).startswith('/') else str(data["imgPath"]),
+#                 "title": data["title"],
+#                 "summary": data["summary"],
+#             })
+#
+#         return response_success(code=200, data=res)
+
+
+class Picture(APIView):
+    # 获取
     def get(self, request):
-        obj = Pictures.objects.filter(sort=1).order_by('id')
+        obj = Pictures.objects.filter(sort=1).order_by('title')
         serializer = PictureSerializers(obj, many=True)
         res = []
         for data in serializer.data:
             res.append({
-                "img": "http://" + request.get_host() + data["imgPath"],
+                "img": str(data["imgPath"])[1:] if str(data["imgPath"]).startswith('/') else str(data["imgPath"]),
                 "title": data["title"],
                 "summary": data["summary"],
             })
 
         return response_success(code=200, data=res)
 
-
-class PublishPicture(APIView):
+    # 发布图集
+    @method_decorator(check_admin)
     def post(self, request):
         images = request.FILES.getlist("file")
         summary = request.data.get('summary')
@@ -330,29 +401,57 @@ class PublishPicture(APIView):
             for image in images:
                 print(image)
                 upload_path = upload_image(image, pic_dic)
-                Pictures.objects.create(imgPath=upload_path, title=title, summary=summary,sort=i)
+                Pictures.objects.create(imgPath=upload_path, title=title, summary=summary, sort=i)
                 i += 1
             return response_success(code=200, message="图集上传成功")
 
-    def put(self,request):
+    # 更新图集
+    @method_decorator(check_admin)
+    def put(self, request):
         summary = request.data.get("summary")
         idList = request.data.get("imglist").split(",")
         i = 1
         if idList:
             for id in idList:
-                Pictures.objects.filter(id=id).update(sort=i,summary=summary)
+                Pictures.objects.filter(id=id).update(sort=i, summary=summary)
                 i += 1
-            return response_success(code=200,message="更新成功")
-        return response_failure(304,message="更新失败")
+            return response_success(code=200, message="更新成功")
+        return response_failure(304, message="更新失败")
 
-    def delete(self,request):
+    # 删除图集
+    @method_decorator(check_admin)
+    def delete(self, request):
         title = request.data.get("title")
-        try:
-            Pictures.objects.filter(title=title).delete()
-            del_dict("static/picture/"+title)
-            return response_failure(200,message="删除成功")
-        except:
-            return response_failure(409,message="删除失败")
+        # try:
+        Pictures.objects.filter(title=title).delete()
+        del_dict("static/picture/" + title)
+        return response_failure(200, message="删除成功")
+        # except:
+        #     return response_failure(409, message="删除失败")
+
+
+class UpdatePicture(APIView):
+    # 图集图片的添加
+    @method_decorator(check_admin)
+    def put(self, request):
+        title = request.data.get('title')
+        file = request.data.get('file')
+        summary = request.data.get('summary')
+        pic_dic = os.path.join('static\\picture', title + '\\')
+        upload_path = upload_image(file, pic_dic)
+        count = Pictures.objects.filter(title=title).count() + 1
+        obj = Pictures.objects.create(imgPath=upload_path, title=title, summary=summary, sort=count)
+        return response_success(code=200, data={"id": obj.id, "img": str(obj.imgPath)})
+
+    # 图集图片的删除
+    @method_decorator(check_admin)
+    def delete(self, request):
+        id = request.data.get('id')
+        obj = Pictures.objects.filter(id=id).first()
+        path = str(obj.imgPath)
+        obj.delete()
+        os.remove(path)
+        return response_failure(200, message="删除成功")
 
 
 class GetPictureDesc(APIView):
@@ -394,7 +493,7 @@ class GetPictureRec(APIView):
             for data in serializer.data:
                 res.append({
                     "id": data["id"],
-                    "img": data["imgPath"][1:],
+                    "img": str(data["imgPath"])[1:] if str(data["imgPath"]).startswith('/') else str(data["imgPath"]),
                     "title": data["title"],
                 })
             random.shuffle(res)
@@ -421,28 +520,8 @@ class GetImg(APIView):
         return HttpResponse(img_byte)
 
 
-class UpdatePicutre(APIView):
-    def put(self, request):
-        title = request.data.get('title')
-        file = request.data.get('file')
-        summary = request.data.get('summary')
-        pic_dic = os.path.join('static\\picture', title + '\\')
-        upload_path = upload_image(file, pic_dic)
-        count = Pictures.objects.filter(title=title).count() + 1
-        obj = Pictures.objects.create(imgPath=upload_path, title=title, summary=summary,sort=count)
-        return response_success(code=200, data={"id": obj.id, "img": str(obj.imgPath)})
-
-    def delete(self,request):
-        id = request.data.get('id')
-        obj = Pictures.objects.filter(id=id).first()
-        path = str(obj.imgPath)
-        obj.delete()
-        os.remove(path)
-        return response_failure(200,message="删除成功")
-
-
 class Search(APIView):
-    def get(self,request):
+    def get(self, request):
         key = request.GET.get('key')
         queryset = Posts.objects.filter(title__contains=key).order_by("id")
         total = queryset.count()
@@ -471,3 +550,110 @@ class Search(APIView):
         }
 
         return response_success(code=200, data=res)
+
+
+class IsAdmin(APIView):
+    def get(self, request):
+        role = request.session.get("role")
+        if role == "s":
+            return response_success(200)
+        elif role:
+            return response_success(303, message="当前用户非管理员")
+        else:
+            return response_success(303, message="请先登录!")
+
+
+class UserInfo(APIView):
+    @method_decorator(check_login)
+    def get(self, request):
+        id = request.GET.get('id')
+        obj = Users.objects.filter(id=id).first()
+        serializer = UserSerializers(obj)
+        data = serializer.data
+        res = {
+            "name": data['name'],
+            "email": data['email'],
+            "avatar": str(data["avatar"])[1:] if str(data["avatar"]).startswith('/') else str(data["avatar"]),
+            "role": data['role'],
+            "loginTime": data["loginTime"],
+            "phone": data['phone'] if data['phone'] else '暂无',
+        }
+        return response_success(200, data=res)
+
+    @method_decorator(check_login)
+    def put(self, request):
+        id = request.data.get("id")
+        name = request.data.get("name")
+        phone = request.data.get("phone")
+        avatar = request.data.get('avatar')
+        flag = Users.objects.filter(id=id).update(name=name, phone=phone, avatar=avatar)
+        if flag:
+            return response_success(200, message="用户信息修改成功")
+        else:
+            return response_failure(304, message="用户信息修改失败")
+
+
+class Comment(APIView):
+    @method_decorator(check_login)
+    def post(self, request):
+        data = request.data
+        data["postId"] = Posts.objects.filter(id=data["postId"]).first().id
+        data["userId"] = Users.objects.filter(id=data["userId"]).first().id
+        data["time"] = data["time"].replace('/', '-')
+        serializer = CommentSerializers(data=data)
+        if not serializer.is_valid():
+            return response_failure(code=400, message="数据格式错误")
+        serializer.save()
+        return response_success(200, data=serializer.data)
+
+    # @method_decorator(check_login)
+    def get(self, request):
+        postId = request.GET.get('postId')
+        userId = request.GET.get('userId')
+        comments = []
+        if postId:
+            comments = Comments.objects.filter(postId=postId).order_by('time')
+        if userId:
+            comments = Comments.objects.filter(userId=userId).order_by('-time')
+        res = []
+        for comment in comments:
+            name = comment.userId.name
+            avatar = str(comment.userId.avatar)
+            serializer = CommentSerializers(comment)
+            data = serializer.data
+            data['name'] = name
+            data['avatar'] = avatar
+            data['title'] = comment.postId.title
+
+            res.append(data)
+        return response_success(200, data=res)
+
+    @method_decorator(check_login)
+    def delete(self, request):
+        id = request.data.get('id')
+        flag, count = Comments.objects.filter(id=id).delete()
+        if flag:
+            return response_success(200, message='删除成功')
+        else:
+            return response_success(202, message="删除失败")
+
+
+class Avatar(APIView):
+    def post(self, request):
+        img = request.FILES.get("file")
+        upload_path = upload_image(img, 'static/user/')
+        return response_success(200, data={"avatar": upload_path})
+
+
+class Register(APIView):
+    def post(self, request):
+        data = request.data
+        if data['comfirm'] == data['pwd']:
+            data['pwd'] = hashlib.sha256(data['pwd'].encode('utf-8')).hexdigest()
+            del data['comfirm']
+            serializer = UserSerializers(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return response_success(200, message='注册成功')
+            return response_failure(304, message=serializer.errors)
+        return response_failure(400, message="两次输入的密码不一致")

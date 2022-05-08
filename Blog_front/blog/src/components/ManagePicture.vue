@@ -8,7 +8,7 @@
       <el-row :gutter="20" v-for="(i,index) in row" :key="index" :style="{ marginTop:'10px' }">
         <el-col :span="8" v-for="(j,index) in 3" :key="index">
           <el-card :body-style="{ padding: '0px' }" v-if="pictures[(i-1)*3+j-1]" shadow="hover" class="card">
-            <el-image :src="pictures[(i-1)*3+j-1].img" class="image" :fit='"cover"' :alt="pictures[(i-1)*3+j-1].title"></el-image>
+            <el-image :src="$API.BASE_SERVER_URL+pictures[(i-1)*3+j-1].img" class="image" :fit='"cover"' :alt="pictures[(i-1)*3+j-1].title"></el-image>
             <div style="padding: 6px;">
               <time>{{ /\d*年\d*月\d*日/.exec(pictures[(i-1)*3+j-1].title)[0] }}</time>
                 <div class="desc">"{{pictures[(i-1)*3+j-1].summary}}"</div>
@@ -56,7 +56,7 @@
     },
     methods: {
       getPictures() {
-        this.$get(this.$API.API_GET_PICTURES).then(res => {
+        this.$get(this.$API.API_PICTURE).then(res => {
           if (res.code == 200) {
             this.pictures = res.data;
             this.isloading = false;
@@ -85,7 +85,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$del(this.$API.API_UPLOAD_PICTURE, {
+          this.$del(this.$API.API_PICTURE, {
             'title': title
           }).then(res => {
             if (res.code == 200) {

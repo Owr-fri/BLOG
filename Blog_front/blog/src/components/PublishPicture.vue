@@ -101,7 +101,7 @@
 
         this.isload = true;
         axios.post(
-          this.$API.API_UPLOAD_PICTURE,
+          this.$API.API_PICTURE,
           fd,
           {
             headers: { 'Content-Type': 'multipart/form-data' }
